@@ -1,3 +1,4 @@
+// Package redisrate for redis ratelimit.
 package redisrate
 
 import (
@@ -9,12 +10,14 @@ import (
 
 const redisPrefix = "rate:"
 
+// Limit rate limit.
 type Limit struct {
 	Rate   int
 	Period time.Duration
 	Burst  int
 }
 
+// PerSecond per second limit.
 func PerSecond(rate int) *Limit {
 	return &Limit{
 		Rate:   rate,
@@ -23,6 +26,7 @@ func PerSecond(rate int) *Limit {
 	}
 }
 
+// PerMinute per min limit.
 func PerMinute(rate int) *Limit {
 	return &Limit{
 		Rate:   rate,
@@ -31,6 +35,7 @@ func PerMinute(rate int) *Limit {
 	}
 }
 
+// PerHour per hour limit.
 func PerHour(rate int) *Limit {
 	return &Limit{
 		Rate:   rate,
@@ -69,9 +74,10 @@ func (l *Limiter) AllowN(key string, limit *Limit, n int) (*Result, error) {
 	if err != nil {
 		return nil, err
 	}
-	values := v.([]interface{})
 
-	retryAfter, err := strconv.ParseFloat(string(values[2].([]byte)), 64)
+	values := v.([]interface{})
+	var retryAfter float64
+	retryAfter, err = strconv.ParseFloat(string(values[2].([]byte)), 64)
 	if err != nil {
 		return nil, err
 	}
@@ -95,9 +101,11 @@ func dur(f float64) time.Duration {
 	if f == -1 {
 		return -1
 	}
+
 	return time.Duration(f * float64(time.Second))
 }
 
+// Result result
 type Result struct {
 	// Limit is the limit that was used to obtain this result.
 	Limit *Limit

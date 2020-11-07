@@ -16,7 +16,8 @@ func newPool(addr string, password string) *redis.Pool {
 		MaxIdle:     3,
 		MaxActive:   10000,
 		IdleTimeout: 240 * time.Second,
-		// Dial or DialContext must be set. When both are set, DialContext takes precedence over Dial.
+		// Dial or DialContext must be set.
+		// When both are set, DialContext takes precedence over Dial.
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", addr,
 				redis.DialConnectTimeout(5*time.Second),
